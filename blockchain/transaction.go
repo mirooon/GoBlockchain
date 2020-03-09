@@ -5,12 +5,18 @@ import (
 )
 
 type Transaction struct {
-	sth string
+	senderPublicKey    string
+	senderPrivateKey   string
+	recipientPublicKey string
+	amount             string
 }
 
-func NewTransaction() *Transaction {
+func NewTransaction(senderPublicKey string, senderPrivateKey string, recipientPublicKey string, amount string) *Transaction {
 	t := new(Transaction)
-	t.sth = "TODO"
+	t.senderPublicKey = senderPublicKey
+	t.senderPrivateKey = senderPrivateKey
+	t.recipientPublicKey = recipientPublicKey
+	t.amount = amount
 	return t
 }
 

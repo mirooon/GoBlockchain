@@ -13,7 +13,7 @@ export class WalletGenerator extends React.Component {
     publicKey: null
   };
   generate() {
-    axios.get('http://localhost:8081/wallet/generate')
+    axios.get('http://localhost:8080/wallet/generate')
       .then((response) => {
         console.log(response);
         this.setState({
@@ -35,7 +35,7 @@ export class WalletGenerator extends React.Component {
           </Grid.Col>
           <Grid.Col md={4}>
             <Form.Label>Public Key</Form.Label>
-            <Form.Textarea value={this.state.publicKey} className="container-fluid" disabled={true} />
+            <Form.Textarea value={this.state.publicKey} className="container-fluid" readOnly={true}/>
           </Grid.Col>
           <Grid.Col md={4}>
           </Grid.Col>
@@ -46,7 +46,7 @@ export class WalletGenerator extends React.Component {
           </Grid.Col>
           <Grid.Col md={4}>
             <Form.Label>Private Key</Form.Label>
-            <Form.Textarea value={this.state.privateKey} className="container-fluid" disabled={true} />
+            <Form.Textarea value={this.state.privateKey} className="container-fluid" readOnly={true}/>
           </Grid.Col>
           <Grid.Col md={4}>
           </Grid.Col>

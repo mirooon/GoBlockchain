@@ -26,6 +26,11 @@ func (wallet *Wallet) GetHexPublicKey() string {
 	return encodedPublicKeyStr
 }
 
+func HexKeysToWallet(publicKey string, privateKey string) Wallet {
+	decodedPublicKeyBytes := hex.DecodeString(publicKey)
+	ecdsaPublicKey := elliptic.Unmarshal()
+}
+
 func NewKeyPair() (ecdsa.PrivateKey, ecdsa.PublicKey) {
 	pubkeyCurve := elliptic.P256() //see http://golang.org/pkg/crypto/elliptic/#P256
 
@@ -41,6 +46,10 @@ func NewKeyPair() (ecdsa.PrivateKey, ecdsa.PublicKey) {
 	pubkey = privatekey.PublicKey
 
 	return *privatekey, pubkey
+}
+
+func signTransaction(transaction Transaction) string {
+
 }
 
 func MakeWallet() *Wallet {

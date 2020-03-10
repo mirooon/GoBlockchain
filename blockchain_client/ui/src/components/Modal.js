@@ -1,5 +1,5 @@
 import React from 'react';
-// eslint-disable-next-line
+import axios from 'axios'
 import {Modal, Button } from 'react-bootstrap';
 import { Form } from 'tabler-react'
 
@@ -7,6 +7,7 @@ export class CustomModal extends React.Component {
   constructor(props) {
     super(props);
     this.handleClose = this.handleClose.bind(this);
+    this.newTransaction = this.newTransaction.bind(this);
     this.handleShow = this.handleShow.bind(this);
   }
 
@@ -40,6 +41,31 @@ export class CustomModal extends React.Component {
 
   handleShow() {
     this.setState({showModal: true})
+  }
+
+  newTransaction() {
+    axios.defaults.headers['Access-Control-Allow-Methods'] = 'GET, POST';
+    axios.defaults.headers['Access-Control-Allow-Origin'] = '*';
+    axios.post(this.state.blockchainNode + '/transaction/new', 
+    {
+      "senderPublicKey":this.state.senderPublicKey,
+      "senderPrivateKey":this.state.senderPrivateKey,
+      "recipientPublicKey":this.state.recipientPublicKey,
+      "amount":this.state.amount,
+    }, 
+      )
+      .then((response) => {
+        console.log(response.data);
+        this.setState({blockchainNode: response.data.data})
+        // this.setState({ show: true, signature: response.data.Signature}, () => {console.log(this.state)});
+        // this.setState({
+        //   privateKey: response.data.privateKey,
+        //   publicKey: response.data.publicKey
+        // }, function () {
+        //   console.log(this.state.privateKey);
+        // });
+      }
+      )
   }
 
   render (){
@@ -76,7 +102,7 @@ export class CustomModal extends React.Component {
           <Button variant="secondary" onClick={this.handleClose}>
             Close
           </Button>
-          <Button variant="success" onClick={this.handleClose}>
+          <Button variant="success" onClick={this.newTransaction}>
             Confirm
           </Button>
         </Modal.Footer>

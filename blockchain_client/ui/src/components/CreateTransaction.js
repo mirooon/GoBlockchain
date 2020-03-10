@@ -25,11 +25,9 @@ export class CreateTransaction extends React.Component {
   }
 
   childHandler(showModal) {
-    // log our state before and after we updated it
-    console.log('%cPrevious Parent State: ' + JSON.stringify(this.state), "color:orange");
     this.setState({
         show: false
-    },() => console.log('Updated Parent State:', this.state));
+    },() => {});
 }
 
   createTransaction() {

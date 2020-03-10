@@ -6,50 +6,53 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
-	"os"
+	"log"
+	// "github.com/ethereum/go-ethereum/crypto/sha3"
 )
 
 type Wallet struct {
-	PrivateKey ecdsa.PrivateKey `json:"privateKey"`
-	PublicKey  ecdsa.PublicKey  `json:"publicKey"`
+	PrivateKey string `json:"privateKey"`
+	PublicKey  string `json:"publicKey"`
 }
 
-func (wallet *Wallet) GetHexPrivateKey() string {
-	privateKeyBytes := wallet.PrivateKey.D.Bytes()
-	encodedPrivateKeyStr := hex.EncodeToString(privateKeyBytes)
-	return encodedPrivateKeyStr
-}
+// func (wallet *Wallet) GetHexPrivateKey() string {
+// 	privateKeyBytes := wallet.PrivateKey.D.Bytes()
+// 	encodedPrivateKeyStr := hex.EncodeToString(privateKeyBytes)
+// 	return encodedPrivateKeyStr
+// }
 
-func (wallet *Wallet) GetHexPublicKey() string {
-	publicKeyBytes := elliptic.Marshal(wallet.PublicKey, wallet.PublicKey.X, wallet.PublicKey.Y)
-	encodedPublicKeyStr := hex.EncodeToString(publicKeyBytes)
-	return encodedPublicKeyStr
-}
+// func (wallet *Wallet) GetHexPublicKey() string {
+// 	publicKeyBytes := elliptic.Marshal(wallet.PublicKey, wallet.PublicKey.X, wallet.PublicKey.Y)
+// 	encodedPublicKeyStr := hex.EncodeToString(publicKeyBytes)
+// 	return encodedPublicKeyStr
+// }
 
-func HexKeysToWallet(publicKey string, privateKey string) Wallet {
-	decodedPublicKeyBytes := hex.DecodeString(publicKey)
-	ecdsaPublicKey := elliptic.Unmarshal()
-}
+// func HexKeysToWallet(publicKey string, privateKey string) Wallet {
+// 	decodedPublicKeyBytes := hex.DecodeString(publicKey)
+// 	ecdsaPublicKey := elliptic.Unmarshal()
+// }
 
-func NewKeyPair() (ecdsa.PrivateKey, ecdsa.PublicKey) {
-	pubkeyCurve := elliptic.P256() //see http://golang.org/pkg/crypto/elliptic/#P256
-
-	privatekey := new(ecdsa.PrivateKey)
-	privatekey, err := ecdsa.GenerateKey(pubkeyCurve, rand.Reader) // this generates a public & private key pair
-
+func NewKeyPair() (string, string) {
+	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
-	var pubkey ecdsa.PublicKey
-	pubkey = privatekey.PublicKey
+	privateKeyBytes := privateKey.D.Bytes()
+	privateKeyHex := hex.EncodeToString(privateKeyBytes)
+	fmt.Println(privateKeyHex)
 
-	return *privatekey, pubkey
-}
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		log.Fatal("error casting public key to ECDSA")
+	}
 
-func signTransaction(transaction Transaction) string {
+	publicKeyBytes := FromECDSAPub(publicKeyECDSA)
+	publicKeyHex := hex.EncodeToString(publicKeyBytes)
+	fmt.Println(publicKeyHex)
 
+	return privateKeyHex, publicKeyHex
 }
 
 func MakeWallet() *Wallet {

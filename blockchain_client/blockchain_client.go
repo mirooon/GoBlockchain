@@ -18,7 +18,7 @@ func generateWallet(w http.ResponseWriter, r *http.Request) {
 
 	wallet := MakeWallet()
 
-	data := fmt.Sprintf(`{"publicKey": "%s", "privateKey": "%s"}`, wallet.GetHexPrivateKey(), wallet.GetHexPublicKey())
+	data := fmt.Sprintf(`{"publicKey": "%s", "privateKey": "%s"}`, wallet.PrivateKey, wallet.PublicKey)
 	w.Write([]byte(data))
 }
 
@@ -51,7 +51,7 @@ func createTransaction(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%+v\n", transaction)
 	response := CreateTransactionResponse{
 		Transaction: transaction,
-		Signature:   signTransaction(transaction),
+		Signature:   transaction.SignTransaction(),
 	}
 	responseJSON, err := json.Marshal(response)
 	if err != nil {

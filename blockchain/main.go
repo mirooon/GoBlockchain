@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -16,7 +17,25 @@ func newTransaction(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		enableCors(&w)
 
-		data := fmt.Sprintf(`{"data": "%s"}`, "data")
+		d := json.NewDecoder(r.Body)
+		d.DisallowUnknownFields() // catch unwanted fields
+
+		transaction := Transaction{}
+
+		err := d.Decode(&transaction)
+		if err != nil {
+			// bad JSON or unrecognized json field
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if d.More() {
+			http.Error(w, "extraneous data after JSON object", http.StatusBadRequest)
+			return
+		}
+
+		res := transaction.VerifyTransaction()
+		data := fmt.Sprintf(`{"verifyResult": "%B"}`, res)
 		w.Write([]byte(data))
 	} else {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)

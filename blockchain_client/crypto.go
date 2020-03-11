@@ -34,11 +34,3 @@ func toECDSA(d []byte) (*ecdsa.PrivateKey, error) {
 func fromIntToHex(n *big.Int) string {
 	return fmt.Sprintf("%x", n) // or %X or upper case
 }
-
-func signatureHexToIntPair(signature string) (*big.Int, *big.Int) {
-	rInt := new(big.Int)
-	rInt.SetString(signature[:64], 16)
-	sInt := new(big.Int)
-	sInt.SetString(signature[64:], 16)
-	return rInt, sInt
-}

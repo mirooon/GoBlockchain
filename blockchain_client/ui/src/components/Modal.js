@@ -49,14 +49,14 @@ export class CustomModal extends React.Component {
     axios.post(this.state.blockchainNode + '/transaction/new', 
     {
       "senderPublicKey":this.state.senderPublicKey,
-      "senderPrivateKey":this.state.senderPrivateKey,
       "recipientPublicKey":this.state.recipientPublicKey,
+      "signature":this.state.signature,
       "amount":this.state.amount,
     }, 
       )
       .then((response) => {
         console.log(response.data);
-        this.setState({blockchainNode: response.data.data})
+        // this.setState({blockchainNode: response.data.data})
         // this.setState({ show: true, signature: response.data.Signature}, () => {console.log(this.state)});
         // this.setState({
         //   privateKey: response.data.privateKey,

@@ -58,15 +58,5 @@ func (t *Transaction) SignTransaction() string {
 		fmt.Printf("%v\n", err)
 	}
 	signature := fromIntToHex(r) + fromIntToHex(s)
-	fmt.Printf("signature\n")
-	fmt.Printf("%+v\n", signature)
-	rInt, sInt := signatureHexToIntPair(signature)
-	fmt.Printf("rInt\n")
-	fmt.Printf("%+v\n", rInt)
-	fmt.Printf("sInt\n")
-	fmt.Printf("%+v\n", sInt)
-	res := ecdsa.Verify(&privateKeyECDSA.PublicKey, ToBytes(hashTx), rInt, sInt)
-	fmt.Printf("res\n")
-	fmt.Printf("%+v\n", res)
 	return signature
 }

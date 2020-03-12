@@ -3,7 +3,6 @@ package main
 import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
-	"fmt"
 	"math/big"
 )
 
@@ -12,10 +11,6 @@ func ToECDSAPub(pub []byte) *ecdsa.PublicKey {
 		return nil
 	}
 	x, y := elliptic.Unmarshal(elliptic.P256(), pub)
-	fmt.Printf("x\n")
-	fmt.Printf("%+v\n", x)
-	fmt.Printf("y\n")
-	fmt.Printf("%+v\n", y)
 	publicKey := ecdsa.PublicKey{
 		Curve: elliptic.P256(),
 		X:     x,

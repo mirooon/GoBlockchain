@@ -40,11 +40,7 @@ func (t *Transaction) ShowTransactionInfo() {
 }
 
 func (t *Transaction) SignTransaction() string {
-	fmt.Printf("SenderPrivateKey\n")
-	fmt.Printf("%v\n", t.SenderPrivateKey)
 	privateKey, err := hex.DecodeString(t.SenderPrivateKey)
-	fmt.Printf("PrivateKey\n")
-	fmt.Printf("%v\n", len(privateKey))
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}
@@ -52,7 +48,12 @@ func (t *Transaction) SignTransaction() string {
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}
-	hashTx := SHA256(t)
+	transactionToSign := struct {
+		SenderPublicKey    string
+		RecipientPublicKey string
+		Amount             string
+	}{t.SenderPublicKey, t.RecipientPublicKey, t.Amount}
+	hashTx := SHA256(transactionToSign)
 	r, s, err := ecdsa.Sign(rand.Reader, privateKeyECDSA, ToBytes(hashTx))
 	if err != nil {
 		fmt.Printf("%v\n", err)

@@ -35,7 +35,7 @@ func newTransaction(w http.ResponseWriter, r *http.Request) {
 		}
 
 		res := transaction.VerifyTransaction()
-		data := fmt.Sprintf(`{"verifyResult": "%B"}`, res)
+		data := fmt.Sprintf(`{"verifyResult": "%t"}`, res)
 		w.Write([]byte(data))
 	} else {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)

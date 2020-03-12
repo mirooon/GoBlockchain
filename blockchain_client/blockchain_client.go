@@ -18,7 +18,7 @@ func generateWallet(w http.ResponseWriter, r *http.Request) {
 
 	wallet := MakeWallet()
 
-	data := fmt.Sprintf(`{"publicKey": "%s", "privateKey": "%s"}`, wallet.PrivateKey, wallet.PublicKey)
+	data := fmt.Sprintf(`{"publicKey": "%s", "privateKey": "%s"}`, wallet.PublicKey, wallet.PrivateKey)
 	w.Write([]byte(data))
 }
 

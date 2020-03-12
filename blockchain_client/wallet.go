@@ -5,7 +5,6 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"encoding/hex"
-	"fmt"
 	"log"
 	// "github.com/ethereum/go-ethereum/crypto/sha3"
 )
@@ -40,7 +39,6 @@ func NewKeyPair() (string, string) {
 
 	privateKeyBytes := privateKey.D.Bytes()
 	privateKeyHex := hex.EncodeToString(privateKeyBytes)
-	fmt.Println(privateKeyHex)
 
 	publicKey := privateKey.Public()
 	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
@@ -50,7 +48,6 @@ func NewKeyPair() (string, string) {
 
 	publicKeyBytes := FromECDSAPub(publicKeyECDSA)
 	publicKeyHex := hex.EncodeToString(publicKeyBytes)
-	fmt.Println(publicKeyHex)
 
 	return privateKeyHex, publicKeyHex
 }

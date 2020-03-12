@@ -38,21 +38,18 @@ func SHA256(o interface{}) string {
 }
 
 func (t *Transaction) VerifyTransaction() bool {
-	hashTx := SHA256(t)
+	signedTransaction := struct {
+		SenderPublicKey    string
+		RecipientPublicKey string
+		Amount             string
+	}{t.SenderPublicKey, t.RecipientPublicKey, t.Amount}
+	hashTx := SHA256(signedTransaction)
 	rInt, sInt := signatureHexToIntPair(t.Signature)
-	fmt.Printf("rInt\n")
-	fmt.Printf("%+v\n", rInt)
-	fmt.Printf("sInt\n")
-	fmt.Printf("%+v\n", sInt)
 	publicKeyBytes, err := hex.DecodeString(t.SenderPublicKey)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}
-	fmt.Printf("publicKeyBytes\n")
-	fmt.Printf("%+v\n", publicKeyBytes)
 	publicKeyECDSA := ToECDSAPub(publicKeyBytes)
 	res := ecdsa.Verify(publicKeyECDSA, ToBytes(hashTx), rInt, sInt)
-	fmt.Printf("res\n")
-	fmt.Printf("%+v\n", res)
 	return res
 }

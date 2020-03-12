@@ -36,19 +36,44 @@ func newTransaction(w http.ResponseWriter, r *http.Request) {
 
 		res := transaction.VerifyTransaction()
 		data := fmt.Sprintf(`{"verifyResult": "%t"}`, res)
+		if res {
+			blockchain.AddTransaction(transaction)
+		}
 		w.Write([]byte(data))
 	} else {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
 }
 
+func getTransactions(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		enableCors(&w)
+		fmt.Printf("blockchain.Transactions\n")
+		fmt.Printf("%v\n", blockchain.Transactions)
+		jsonTransactions, err := json.Marshal(blockchain.Transactions)
+		if err != nil {
+			// bad JSON or unrecognized json field
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		w.Write([]byte(jsonTransactions))
+	} else {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	}
+}
+
+var blockchain Blockchain
+
 func main() {
 
-	// blockchain := NewBlockchain()
+	blockchain = NewBlockchain()
 	// blockchain.AddBlock("Second Block!")
 	// fmt.Printf("%+v\n", blockchain)
 	// fmt.Printf("%+v\n", *blockchain.chain[1])
 	http.HandleFunc("/transaction/new", newTransaction)
+	http.HandleFunc("/transactions", getTransactions)
 	log.Printf("Listening on port 5001")
 	log.Fatal(http.ListenAndServe(":5001", nil))
 }

@@ -9,11 +9,11 @@ type Block struct {
 	BlockNumber  int
 	Data         string
 	Timestamp    time.Time
-	Transactions []*Transaction
+	Transactions []Transaction
 	PreviousHash string
 }
 
-func CreateGenesisBlock() *Block {
+func CreateGenesisBlock() Block {
 	b := new(Block)
 	b.BlockNumber = 0
 	b.Data = "Genesis Block"
@@ -21,10 +21,10 @@ func CreateGenesisBlock() *Block {
 	// b.Transactions = []
 	b.PreviousHash = "0000000000000000000000000000000000000000000000000000000000000000"
 	fmt.Println("Genesis block created!")
-	return b
+	return *b
 }
 
-func NewBlock(data string, blockNumber int, previousHash string, transactions []*Transaction) *Block {
+func NewBlock(data string, blockNumber int, previousHash string, transactions []Transaction) Block {
 	b := new(Block)
 	b.BlockNumber = blockNumber
 	b.Data = data
@@ -32,7 +32,7 @@ func NewBlock(data string, blockNumber int, previousHash string, transactions []
 	b.Transactions = transactions
 	b.PreviousHash = previousHash
 	fmt.Println("New block created!")
-	return b
+	return *b
 }
 
 func (b *Block) ShowBlockInfo() {

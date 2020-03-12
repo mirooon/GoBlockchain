@@ -6,24 +6,29 @@ import (
 )
 
 type Blockchain struct {
-	transactions []*Transaction
-	chain        []*Block
+	Transactions []Transaction
+	Chain        []Block
 }
 
-func NewBlockchain() *Blockchain {
+func NewBlockchain() Blockchain {
 	b := new(Blockchain)
 	fmt.Println("New blockchain created!")
 	genesisBlock := CreateGenesisBlock()
-	b.chain = append(b.chain, genesisBlock)
-	return b
+	b.Chain = append(b.Chain, genesisBlock)
+	return *b
 }
 
 func (bc *Blockchain) AddBlock(data string) {
-	prevBlock := bc.chain[len(bc.chain)-1]
-	newBlock := NewBlock(data, len(bc.chain), asSha256(prevBlock), bc.transactions)
-	bc.transactions = nil
-	bc.chain = append(bc.chain, newBlock)
+	prevBlock := bc.Chain[len(bc.Chain)-1]
+	newBlock := NewBlock(data, len(bc.Chain), asSha256(prevBlock), bc.Transactions)
+	bc.Transactions = nil
+	bc.Chain = append(bc.Chain, newBlock)
 	fmt.Println("Block added!")
+}
+
+func (bc *Blockchain) AddTransaction(transaction Transaction) {
+	bc.Transactions = append(bc.Transactions, transaction)
+	fmt.Println("Transaction added!")
 }
 
 func asSha256(o interface{}) string {

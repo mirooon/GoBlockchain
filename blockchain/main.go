@@ -64,6 +64,46 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+var MINING_SENDER string = "The node"
+var MINING_REWARD int = 1
+
+func mine(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" || r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		enableCors(&w)
+		nonce := blockchain.ProofOfWork()
+		blockchain.SubmitTransaction(MINING_SENDER, blockchain.NodeId, "", MINING_REWARD)
+
+		lastBlock := blockchain.Chain[len(blockchain.Chain)-1]
+		previousHash := blockchain.Hash(lastBlock)
+		block := blockchain.AddBlock(nonce, previousHash)
+		fmt.Printf("%v\n", block)
+		response := struct {
+			Message      string
+			BlockNumber  int
+			Transactions []Transaction
+			Nonce        string
+			PreviousHash string
+		}{
+			"Block created!",
+			block.BlockNumber,
+			block.Transactions,
+			block.Nonce,
+			block.PreviousHash,
+		}
+
+		jsResponse, err := json.Marshal(response)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(jsResponse))
+	} else {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	}
+}
+
 var blockchain Blockchain
 
 func main() {
@@ -74,6 +114,7 @@ func main() {
 	// fmt.Printf("%+v\n", *blockchain.chain[1])
 	http.HandleFunc("/transaction/new", newTransaction)
 	http.HandleFunc("/transactions", getTransactions)
+	http.HandleFunc("/mine", mine)
 	log.Printf("Listening on port 5001")
 	log.Fatal(http.ListenAndServe(":5001", nil))
 }

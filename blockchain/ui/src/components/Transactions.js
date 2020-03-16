@@ -6,6 +6,7 @@ export class Transactions extends React.Component {
   constructor(props) {
     super(props);
     this.getTransactions = this.getTransactions.bind(this);
+    this.mineBlock = this.mineBlock.bind(this);
   }
 
   state = {
@@ -28,17 +29,18 @@ export class Transactions extends React.Component {
 
   mineBlock() {
     console.log("mine");
-    // axios.get('http://localhost:5001/transactions')
-    //   .then((response) => {
-    //     this.setState({ transactions: response.data}, () => {console.log("transactions downloaded")});
-    //     // this.setState({
-    //     //   privateKey: response.data.privateKey,
-    //     //   publicKey: response.data.publicKey
-    //     // }, function () {
-    //     //   console.log(this.state.privateKey);
-    //     // });
-    //   }
-    //   )
+    axios.get('http://localhost:5001/mine')
+      .then((response) => {
+        console.log(response)
+        // this.setState({ transactions: response.data}, () => {console.log("transactions downloaded")});
+        // this.setState({
+        //   privateKey: response.data.privateKey,
+        //   publicKey: response.data.publicKey
+        // }, function () {
+        //   console.log(this.state.privateKey);
+        // });
+      }
+      )
   }
 
     render() {
@@ -86,7 +88,7 @@ export class Transactions extends React.Component {
                   <Grid.Col md={5}>
                   </Grid.Col>
                   <Grid.Col md={2}>
-                  <Button color="primary">Mine</Button>
+                  <Button color="primary" onClick={this.mineBlock}>Mine</Button>
                   </Grid.Col>
                   <Grid.Col md={5}>
                   </Grid.Col>

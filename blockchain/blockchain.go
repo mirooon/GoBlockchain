@@ -3,27 +3,51 @@ package main
 import (
 	"crypto/sha256"
 	"fmt"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 type Blockchain struct {
-	transactions []*Transaction
-	chain        []*Block
+	Transactions []Transaction
+	Chain        []Block
+	NodeId       string
 }
 
-func NewBlockchain() *Blockchain {
+func NewBlockchain() Blockchain {
 	b := new(Blockchain)
+	b.NodeId = uuid.New().String()
 	fmt.Println("New blockchain created!")
 	genesisBlock := CreateGenesisBlock()
-	b.chain = append(b.chain, genesisBlock)
-	return b
+	b.Chain = append(b.Chain, genesisBlock)
+	return *b
 }
 
-func (bc *Blockchain) AddBlock(data string) {
-	prevBlock := bc.chain[len(bc.chain)-1]
-	newBlock := NewBlock(data, len(bc.chain), asSha256(prevBlock), bc.transactions)
-	bc.transactions = nil
-	bc.chain = append(bc.chain, newBlock)
+func (bc *Blockchain) AddBlock(nonce string, prevBlockHash string) Block {
+	newBlock := NewBlock(len(bc.Chain), time.Now(), bc.Transactions, nonce, prevBlockHash)
+	bc.Transactions = nil
+	bc.Chain = append(bc.Chain, newBlock)
 	fmt.Println("Block added!")
+	return newBlock
+}
+
+func (bc *Blockchain) AddTransaction(transaction Transaction) {
+	bc.Transactions = append(bc.Transactions, transaction)
+	fmt.Println("Transaction added!")
+}
+
+func (bc *Blockchain) ProofOfWork() string {
+	fmt.Println("Mining!")
+	return "1234"
+}
+
+func (bc *Blockchain) SubmitTransaction(senderPublicKey string, recipientPublicKey string, signature string, amount int) {
+	fmt.Println("Transaction added!")
+}
+
+func (bc *Blockchain) Hash(block Block) string {
+	fmt.Println("Hash block!")
+	return "abc"
 }
 
 func asSha256(o interface{}) string {
@@ -31,4 +55,8 @@ func asSha256(o interface{}) string {
 	h.Write([]byte(fmt.Sprintf("%v", o)))
 
 	return fmt.Sprintf("%x", h.Sum(nil))
+}
+
+func proofOfWork() string {
+	return "1234"
 }

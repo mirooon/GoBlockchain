@@ -7,32 +7,31 @@ import (
 
 type Block struct {
 	BlockNumber  int
-	Data         string
-	Timestamp    time.Time
-	Transactions []*Transaction
+	Timestamp    int64
+	Transactions []Transaction
+	Nonce        string
 	PreviousHash string
 }
 
-func CreateGenesisBlock() *Block {
+func CreateGenesisBlock() Block {
 	b := new(Block)
 	b.BlockNumber = 0
-	b.Data = "Genesis Block"
-	b.Timestamp = time.Now()
+	b.Timestamp = time.Now().Unix()
 	// b.Transactions = []
 	b.PreviousHash = "0000000000000000000000000000000000000000000000000000000000000000"
 	fmt.Println("Genesis block created!")
-	return b
+	return *b
 }
 
-func NewBlock(data string, blockNumber int, previousHash string, transactions []*Transaction) *Block {
+func NewBlock(blockNumber int, timestamp time.Time, transactions []Transaction, nonce string, previousHash string) Block {
 	b := new(Block)
 	b.BlockNumber = blockNumber
-	b.Data = data
-	b.Timestamp = time.Now()
+	b.Timestamp = timestamp.Unix()
 	b.Transactions = transactions
+	b.Nonce = nonce
 	b.PreviousHash = previousHash
 	fmt.Println("New block created!")
-	return b
+	return *b
 }
 
 func (b *Block) ShowBlockInfo() {

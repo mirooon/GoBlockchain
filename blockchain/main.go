@@ -46,8 +46,6 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Printf("blockchain.Transactions\n")
-		fmt.Printf("%v\n", blockchain.Transactions)
 		jsonTransactions, err := json.Marshal(blockchain.Transactions)
 		if err != nil {
 			// bad JSON or unrecognized json field
@@ -64,6 +62,9 @@ func mine(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" || r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		block := blockchain.Mine()
+		res := blockchain.ValidChain()
+		fmt.Printf("%v\n", "ressssss")
+		fmt.Printf("%v\n", res)
 		response := struct {
 			Message      string
 			BlockNumber  int
@@ -79,8 +80,6 @@ func mine(w http.ResponseWriter, r *http.Request) {
 		}
 
 		jsResponse, err := json.Marshal(response)
-		fmt.Printf("%v\n", string(jsResponse))
-
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

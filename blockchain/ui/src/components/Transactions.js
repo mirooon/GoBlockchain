@@ -53,25 +53,22 @@ export class Transactions extends React.Component {
     axios.get('http://localhost:5001/chain')
       .then((response) => {
         const blocksUpdate = response.data.Chain;
-        let minedTransactionsUpdate = []
-        blocksUpdate.forEach((block,blockIndex) => {
-          if(block.Transactions != null && block.Transactions.length > 0){
-          block.Transactions.forEach(transaction => {
-            let transactionUpdate = {...transaction, Timestamp: block.Timestamp, BlockNumber: blockIndex+1}
-            minedTransactionsUpdate.push(transactionUpdate);
-          })
+        if(blocksUpdate != null){
+          let minedTransactionsUpdate = []
+          blocksUpdate.forEach((block,blockIndex) => {
+            if(block.Transactions != null && block.Transactions.length > 0){
+            block.Transactions.forEach(transaction => {
+              let transactionUpdate = {...transaction, Timestamp: block.Timestamp, BlockNumber: blockIndex+1}
+              minedTransactionsUpdate.push(transactionUpdate);
+            })
+          }
+          });
+          this.setState({ 
+              blocks: blocksUpdate,
+              minedTransactions: minedTransactionsUpdate.flat(1),
+            }, () => {
+          });
         }
-        });
-        console.log('minedTransactionsUpdate')
-        console.log(minedTransactionsUpdate)
-        this.setState({ 
-            blocks: blocksUpdate,
-            minedTransactions: minedTransactionsUpdate.flat(1),
-          }, () => {
-          console.log("blocks downloaded")
-          console.log("mined transactions")
-          console.log(this.state.minedTransactions)
-        });
       }
       )
     }

@@ -19,7 +19,9 @@ func CreateGenesisBlock() Block {
 	b.Timestamp = time.Now().Unix()
 	// b.Transactions = []
 	b.PreviousHash = "0000000000000000000000000000000000000000000000000000000000000000"
+	b.Nonce = blockchain.ProofOfWork(b.PreviousHash)
 	fmt.Println("Genesis block created!")
+
 	return *b
 }
 

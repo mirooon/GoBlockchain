@@ -5,16 +5,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-)
 
-func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-}
+	"github.com/rs/cors"
+)
 
 func generateWallet(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	enableCors(&w)
 
 	wallet := MakeWallet()
 
@@ -30,7 +27,6 @@ type CreateTransactionResponse struct {
 func createTransaction(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	enableCors(&w)
 	d := json.NewDecoder(r.Body)
 	d.DisallowUnknownFields() // catch unwanted fields
 
@@ -63,8 +59,10 @@ func createTransaction(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/wallet/generate", generateWallet)
-	http.HandleFunc("/transaction/create", createTransaction)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/wallet/generate", generateWallet)
+	mux.HandleFunc("/transaction/create", createTransaction)
 	log.Printf("Listening on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	handler := cors.Default().Handler(mux)
+	log.Fatal(http.ListenAndServe(":8080", handler))
 }

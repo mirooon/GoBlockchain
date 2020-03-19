@@ -48,13 +48,14 @@ export class CustomModal extends React.Component {
   newTransaction() {
     axios.defaults.headers['Access-Control-Allow-Methods'] = 'GET, POST';
     axios.defaults.headers['Access-Control-Allow-Origin'] = '*';
-    axios.post(this.state.blockchainNode + '/transaction/new', 
-    {
+    const body = {
       "senderPublicKey":this.state.senderPublicKey,
       "recipientPublicKey":this.state.recipientPublicKey,
       "signature":this.state.signature,
-      "amount":this.state.amount,
-    }, 
+      "amount":parseFloat(this.state.amount),
+    };
+    axios.post(this.state.blockchainNode + '/transaction/new', 
+    body, 
       )
       .then((response) => {
         console.log(response.data.verifyResult);

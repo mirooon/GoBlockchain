@@ -5,17 +5,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-)
 
-func enableCors(w *http.ResponseWriter) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-}
+	"github.com/rs/cors"
+)
 
 func newTransaction(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" || r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		enableCors(&w)
 
 		d := json.NewDecoder(r.Body)
 		d.DisallowUnknownFields() // catch unwanted fields
@@ -23,6 +20,7 @@ func newTransaction(w http.ResponseWriter, r *http.Request) {
 		transaction := Transaction{}
 
 		err := d.Decode(&transaction)
+		fmt.Printf("%v\n", err)
 		if err != nil {
 			// bad JSON or unrecognized json field
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -33,7 +31,6 @@ func newTransaction(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "extraneous data after JSON object", http.StatusBadRequest)
 			return
 		}
-
 		res := transaction.VerifyTransaction()
 		data := fmt.Sprintf(`{"verifyResult": "%t"}`, res)
 		if res {
@@ -49,7 +46,6 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		enableCors(&w)
 		fmt.Printf("blockchain.Transactions\n")
 		fmt.Printf("%v\n", blockchain.Transactions)
 		jsonTransactions, err := json.Marshal(blockchain.Transactions)
@@ -64,25 +60,15 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var MINING_SENDER string = "The node"
-var MINING_REWARD int = 1
-
 func mine(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" || r.Method == "OPTIONS" {
+	if r.Method == "POST" || r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
-		enableCors(&w)
-		nonce := blockchain.ProofOfWork()
-		blockchain.SubmitTransaction(MINING_SENDER, blockchain.NodeId, "", MINING_REWARD)
-
-		lastBlock := blockchain.Chain[len(blockchain.Chain)-1]
-		previousHash := blockchain.Hash(lastBlock)
-		block := blockchain.AddBlock(nonce, previousHash)
-		fmt.Printf("%v\n", block)
+		block := blockchain.Mine()
 		response := struct {
 			Message      string
 			BlockNumber  int
 			Transactions []Transaction
-			Nonce        string
+			Nonce        int
 			PreviousHash string
 		}{
 			"Block created!",
@@ -90,6 +76,32 @@ func mine(w http.ResponseWriter, r *http.Request) {
 			block.Transactions,
 			block.Nonce,
 			block.PreviousHash,
+		}
+
+		jsResponse, err := json.Marshal(response)
+		fmt.Printf("%v\n", string(jsResponse))
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(jsResponse))
+	} else {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	}
+}
+
+func getChain(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" || r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		chain := blockchain.Chain
+		response := struct {
+			Chain  []Block
+			Length int
+		}{
+			chain,
+			len(chain),
 		}
 
 		jsResponse, err := json.Marshal(response)
@@ -109,12 +121,12 @@ var blockchain Blockchain
 func main() {
 
 	blockchain = NewBlockchain()
-	// blockchain.AddBlock("Second Block!")
-	// fmt.Printf("%+v\n", blockchain)
-	// fmt.Printf("%+v\n", *blockchain.chain[1])
-	http.HandleFunc("/transaction/new", newTransaction)
-	http.HandleFunc("/transactions", getTransactions)
-	http.HandleFunc("/mine", mine)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/transaction/new", newTransaction)
+	mux.HandleFunc("/transactions", getTransactions)
+	mux.HandleFunc("/mine", mine)
+	mux.HandleFunc("/chain", getChain)
 	log.Printf("Listening on port 5001")
-	log.Fatal(http.ListenAndServe(":5001", nil))
+	handler := cors.Default().Handler(mux)
+	log.Fatal(http.ListenAndServe(":5001", handler))
 }

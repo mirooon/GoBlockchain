@@ -9,6 +9,7 @@ export class CustomModal extends React.Component {
     this.handleClose = this.handleClose.bind(this);
     this.newTransaction = this.newTransaction.bind(this);
     this.handleShow = this.handleShow.bind(this);
+    console.log("1")
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -46,18 +47,20 @@ export class CustomModal extends React.Component {
   }
 
   newTransaction() {
+    console.log("body");
     axios.defaults.headers['Access-Control-Allow-Methods'] = 'GET, POST';
     axios.defaults.headers['Access-Control-Allow-Origin'] = '*';
-    axios.post(this.state.blockchainNode + '/transaction/new', 
-    {
+    body = {
       "senderPublicKey":this.state.senderPublicKey,
       "recipientPublicKey":this.state.recipientPublicKey,
       "signature":this.state.signature,
-      "amount":this.state.amount,
-    }, 
+      "amount": parseFloat(this.state.amount),
+    }
+    console.log(body);
+    axios.post(this.state.blockchainNode + '/transaction/new',  body, 
       )
       .then((response) => {
-        console.log(response.data.verifyResult);
+    console.log("2");
         this.setState({ verifyResult: response.data.verifyResult}, () => {console.log(this.state); console.log(typeof(this.state.verifyResult))});
         // this.setState({blockchainNode: response.data.data})
         // this.setState({ show: true, signature: response.data.Signature}, () => {console.log(this.state)});
@@ -68,7 +71,7 @@ export class CustomModal extends React.Component {
         //   console.log(this.state.privateKey);
         // });
       }
-      )
+      ).catch((reason) => {console.log(reason)})
   }
 
   render (){

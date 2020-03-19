@@ -20,6 +20,9 @@ func NewBlockchain() Blockchain {
 	b.NodeId = uuid.New().String()
 	fmt.Println("New blockchain created!")
 	genesisBlock := CreateGenesisBlock()
+	fmt.Printf("%v\n", "blockchain.Hash(genesisBlock)")
+	fmt.Printf("%v\n", blockchain.Hash(genesisBlock))
+
 	b.Chain = append(b.Chain, genesisBlock)
 	return *b
 }
@@ -28,34 +31,58 @@ func (bc *Blockchain) AddBlock(nonce int, prevBlockHash string) Block {
 	newBlock := NewBlock(len(bc.Chain), time.Now(), bc.Transactions, nonce, prevBlockHash)
 	bc.Transactions = nil
 	bc.Chain = append(bc.Chain, newBlock)
-	fmt.Println("Block added!")
+	// fmt.Println("Block added!")
 	return newBlock
 }
 
 func (bc *Blockchain) AddTransaction(transaction Transaction) {
 	bc.Transactions = append(bc.Transactions, transaction)
-	fmt.Println("Transaction added!")
+	// fmt.Println("Transaction added!")
 }
 
 var MINING_DIFFICULTY int = 1
 
-func (bc *Blockchain) ValidProof(lastBlockHash string, nonce int) bool {
+func (bc *Blockchain) ValidChain() bool {
+	currentBlock := bc.Chain[0]
+	currentIndex := 1
+
+	for currentIndex < len(bc.Chain) {
+		block := bc.Chain[currentIndex]
+		if block.PreviousHash != bc.Hash(currentBlock) {
+			return false
+		}
+
+		if block.Transactions != nil && len(block.Transactions) > 0 {
+			transactions := block.Transactions[:len(block.Transactions)-1] //resign from last (reward) transaction
+			if bc.ValidProof(transactions, block.PreviousHash, block.Nonce) == false {
+				return false
+			}
+		}
+		currentBlock = block
+		currentIndex++
+		fmt.Printf("%v\n", "currentIndex")
+		fmt.Printf("%v\n", currentIndex)
+
+	}
+	return true
+}
+
+func (bc *Blockchain) ValidProof(transactions []Transaction, lastBlockHash string, nonce int) bool {
 	var guess strings.Builder
-	guess.WriteString(string(asSha256(bc.Transactions)))
+
+	guess.WriteString(asSha256(transactions))
 	guess.WriteString(lastBlockHash)
 	guess.WriteString(string(nonce))
 	guessHash := asSha256(guess.String())
 	return strings.HasPrefix(guessHash, strings.Repeat("0", MINING_DIFFICULTY))
 }
 
-func (bc *Blockchain) ProofOfWork() int {
-	lastBlockHash := asSha256(bc.Chain[len(bc.Chain)-1])
+func (bc *Blockchain) ProofOfWork(lastBlockHash string) int {
 	nonce := 0
-	for bc.ValidProof(lastBlockHash, nonce) == false {
+	for bc.ValidProof(bc.Transactions, lastBlockHash, nonce) == false {
 		nonce += 1
-		fmt.Printf("%v\n", "nonce")
-		fmt.Printf("%v\n", nonce)
 	}
+
 	return nonce
 }
 
@@ -63,9 +90,8 @@ var MINING_SENDER string = "The node"
 var MINING_REWARD float32 = 1
 
 func (bc *Blockchain) Mine() Block {
-	nonce := bc.ProofOfWork()
-	fmt.Printf("%v\n", "nonce")
-	fmt.Printf("%v\n", nonce)
+	lastBlockHash := bc.Hash(bc.Chain[len(bc.Chain)-1])
+	nonce := bc.ProofOfWork(lastBlockHash)
 
 	bc.AddRewardTransaction(MINING_SENDER, bc.NodeId, "", MINING_REWARD)
 
@@ -86,7 +112,7 @@ func (bc *Blockchain) AddRewardTransaction(senderPublicKey string, recipientPubl
 	} else if transaction.VerifyTransaction() {
 		bc.AddTransaction(transaction)
 	}
-	fmt.Println("Reward transaction added!")
+	// fmt.Println("Reward transaction added!")
 }
 
 func (bc *Blockchain) Hash(block Block) string {
@@ -98,8 +124,4 @@ func asSha256(o interface{}) string {
 	h.Write([]byte(fmt.Sprintf("%v", o)))
 
 	return fmt.Sprintf("%x", h.Sum(nil))
-}
-
-func proofOfWork() string {
-	return "1234"
 }

@@ -9,7 +9,7 @@ type Block struct {
 	BlockNumber  int
 	Timestamp    int64
 	Transactions []Transaction
-	Nonce        string
+	Nonce        int
 	PreviousHash string
 }
 
@@ -23,7 +23,7 @@ func CreateGenesisBlock() Block {
 	return *b
 }
 
-func NewBlock(blockNumber int, timestamp time.Time, transactions []Transaction, nonce string, previousHash string) Block {
+func NewBlock(blockNumber int, timestamp time.Time, transactions []Transaction, nonce int, previousHash string) Block {
 	b := new(Block)
 	b.BlockNumber = blockNumber
 	b.Timestamp = timestamp.Unix()

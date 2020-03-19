@@ -8,13 +8,13 @@ import (
 )
 
 type Transaction struct {
-	SenderPublicKey    string `json:"SenderPublicKey"`
-	RecipientPublicKey string `json:"RecipientPublicKey"`
-	Signature          string `json:"Signature"`
-	Amount             string `json:"Amount"`
+	SenderPublicKey    string  `json:"SenderPublicKey"`
+	RecipientPublicKey string  `json:"RecipientPublicKey"`
+	Signature          string  `json:"Signature"`
+	Amount             float32 `json:"Amount"`
 }
 
-func NewTransaction(senderPublicKey string, recipientPublicKey string, signature string, amount string) *Transaction {
+func NewTransaction(senderPublicKey string, recipientPublicKey string, signature string, amount float32) *Transaction {
 	t := new(Transaction)
 	t.SenderPublicKey = senderPublicKey
 	t.RecipientPublicKey = recipientPublicKey
@@ -41,7 +41,7 @@ func (t *Transaction) VerifyTransaction() bool {
 	signedTransaction := struct {
 		SenderPublicKey    string
 		RecipientPublicKey string
-		Amount             string
+		Amount             float32
 	}{t.SenderPublicKey, t.RecipientPublicKey, t.Amount}
 	hashTx := SHA256(signedTransaction)
 	rInt, sInt := signatureHexToIntPair(t.Signature)

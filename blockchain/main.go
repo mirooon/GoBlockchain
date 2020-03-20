@@ -62,7 +62,7 @@ func mine(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" || r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		block := blockchain.Mine()
-		res := blockchain.ValidChain()
+		res := blockchain.ValidChain(blockchain.Chain)
 		fmt.Printf("%v\n", "ressssss")
 		fmt.Printf("%v\n", res)
 		response := struct {

@@ -5,6 +5,7 @@ import "tabler-react/dist/Tabler.css";
 import {TabbedCard, Tab, Grid, Card} from 'tabler-react'
 import {WalletGenerator} from './components/WalletGenerator'
 import {CreateTransaction} from './components/CreateTransaction'
+import { Transactions } from './components/Transactions';
 
 function App() {
 
@@ -12,7 +13,7 @@ function App() {
     <div className="App container-fluid">
       <Card>
   <Card.Header>
-    <Card.Title>Go Blockchain Wallet</Card.Title>
+    <Card.Title>Go Blockchain Client</Card.Title>
   </Card.Header>
 </Card>
       <TabbedCard initialTab="Wallet Generator">
@@ -23,17 +24,7 @@ function App() {
     <CreateTransaction/>
   </Tab>
   <Tab title="Transactions">
-    <Grid.Row cards deck>
-      <Grid.Col md={4}>
-        <Card body="Short content" />
-      </Grid.Col>
-      <Grid.Col md={4}>
-        <Card body="Extra long content of card. Lorem ipsum dolor sit amet, consetetur sadipscing elitr" />
-      </Grid.Col>
-      <Grid.Col md={4}>
-        <Card body="Short content" />
-      </Grid.Col>
-    </Grid.Row>
+  <Transactions/>
   </Tab>
 </TabbedCard>
     </div>

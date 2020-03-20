@@ -46,6 +46,7 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
+		blockchain.ResolveConflictsBetweenNodes()
 		jsonTransactions, err := json.Marshal(blockchain.Transactions)
 		if err != nil {
 			// bad JSON or unrecognized json field

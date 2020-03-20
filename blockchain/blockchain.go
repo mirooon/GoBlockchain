@@ -121,7 +121,7 @@ func (bc *Blockchain) ProofOfWork(lastBlockHash string) int {
 	return nonce
 }
 
-var MINING_SENDER string = "The node"
+var MINING_SENDER string = "The blockchain"
 var MINING_REWARD float32 = 1
 
 func (bc *Blockchain) Mine() Block {
@@ -147,7 +147,6 @@ func (bc *Blockchain) AddRewardTransaction(senderPublicKey string, recipientPubl
 	} else if transaction.VerifyTransaction() {
 		bc.AddTransaction(transaction)
 	}
-	// fmt.Println("Reward transaction added!")
 }
 
 func (bc *Blockchain) Hash(block Block) string {

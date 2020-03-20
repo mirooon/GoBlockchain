@@ -62,9 +62,6 @@ func mine(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" || r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		block := blockchain.Mine()
-		res := blockchain.ValidChain(blockchain.Chain)
-		fmt.Printf("%v\n", "ressssss")
-		fmt.Printf("%v\n", res)
 		response := struct {
 			Message      string
 			BlockNumber  int
@@ -115,6 +112,67 @@ func getChain(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func getNodes(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" || r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		nodes := blockchain.Neighbours
+		response := struct {
+			Nodes []string
+		}{
+			nodes,
+		}
+
+		jsResponse, err := json.Marshal(response)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(jsResponse))
+	} else {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	}
+}
+
+func registerNode(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" || r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		d := json.NewDecoder(r.Body)
+		d.DisallowUnknownFields() // catch unwanted fields
+
+		var request struct {
+			Nodes []string
+		}
+		err := d.Decode(&request)
+		if err != nil {
+			// bad JSON or unrecognized json field
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		uniqueNodes := append(blockchain.Neighbours, request.Nodes...)
+		blockchain.Neighbours = uniqueNodes
+		fmt.Printf("%v\n", "Current neighbours")
+		fmt.Printf("%v\n", blockchain.Neighbours)
+		response := struct {
+			Message           string
+			AllFollowingNodes []string
+		}{
+			"Node successfuly added!",
+			blockchain.Neighbours,
+		}
+
+		jsResponse, err := json.Marshal(response)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(jsResponse))
+	} else {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	}
+}
+
 var blockchain Blockchain
 
 func main() {
@@ -125,6 +183,8 @@ func main() {
 	mux.HandleFunc("/transactions", getTransactions)
 	mux.HandleFunc("/mine", mine)
 	mux.HandleFunc("/chain", getChain)
+	mux.HandleFunc("/nodes", getNodes)
+	mux.HandleFunc("/node/new", registerNode)
 	log.Printf("Listening on port 5001")
 	handler := cors.Default().Handler(mux)
 	log.Fatal(http.ListenAndServe(":5001", handler))

@@ -2,7 +2,10 @@ package main
 
 import (
 	"crypto/sha256"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"strings"
 	"time"
 
@@ -12,6 +15,7 @@ import (
 type Blockchain struct {
 	Transactions []Transaction
 	Chain        []Block
+	Neighbours   []string //nodes' ips
 	NodeId       string
 }
 
@@ -20,8 +24,6 @@ func NewBlockchain() Blockchain {
 	b.NodeId = uuid.New().String()
 	fmt.Println("New blockchain created!")
 	genesisBlock := CreateGenesisBlock()
-	fmt.Printf("%v\n", "blockchain.Hash(genesisBlock)")
-	fmt.Printf("%v\n", blockchain.Hash(genesisBlock))
 
 	b.Chain = append(b.Chain, genesisBlock)
 	return *b
@@ -42,12 +44,12 @@ func (bc *Blockchain) AddTransaction(transaction Transaction) {
 
 var MINING_DIFFICULTY int = 1
 
-func (bc *Blockchain) ValidChain() bool {
-	currentBlock := bc.Chain[0]
+func (bc *Blockchain) ValidChain(chain []Block) bool {
+	currentBlock := chain[0]
 	currentIndex := 1
 
-	for currentIndex < len(bc.Chain) {
-		block := bc.Chain[currentIndex]
+	for currentIndex < len(chain) {
+		block := chain[currentIndex]
 		if block.PreviousHash != bc.Hash(currentBlock) {
 			return false
 		}
@@ -60,13 +62,46 @@ func (bc *Blockchain) ValidChain() bool {
 		}
 		currentBlock = block
 		currentIndex++
-		fmt.Printf("%v\n", "currentIndex")
-		fmt.Printf("%v\n", currentIndex)
-
 	}
 	return true
 }
+func (bc *Blockchain) ResolveConflictsBetweenNodes() bool {
+	var currentChain []Block
+	maxLength := len(bc.Chain)
 
+	for _, ip := range bc.Neighbours {
+		resp, err := http.Get("http://" + ip + "/chain")
+		if err != nil {
+			panic(err)
+		}
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			panic(err)
+		}
+		var responseObj struct {
+			Chain  []Block
+			Length int
+		}
+		err = json.Unmarshal(body, &responseObj)
+		if err != nil {
+			panic(err)
+		}
+		length := responseObj.Length
+		chain := responseObj.Chain
+		if length > maxLength && bc.ValidChain(chain) {
+			currentChain = chain
+			maxLength = length
+		}
+	}
+
+	if currentChain != nil {
+		bc.Chain = currentChain
+		return true
+	}
+
+	return false
+}
 func (bc *Blockchain) ValidProof(transactions []Transaction, lastBlockHash string, nonce int) bool {
 	var guess strings.Builder
 

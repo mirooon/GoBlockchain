@@ -139,10 +139,10 @@ func registerNode(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" || r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		d := json.NewDecoder(r.Body)
-		d.DisallowUnknownFields() // catch unwanted fields
+		d.DisallowUnknownFields()
 
 		var request struct {
-			Nodes []string
+			Node string
 		}
 		err := d.Decode(&request)
 		if err != nil {
@@ -150,15 +150,23 @@ func registerNode(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		uniqueNodes := append(blockchain.Neighbours, request.Nodes...)
-		blockchain.Neighbours = uniqueNodes
+		for _, v := range blockchain.Neighbours {
+			if v == request.Node {
+				// Found!
+			}
+		}
+		message := "Node successfuly added!"
+		if blockchain.AddNeigbourIfNotExist(request.Node) {
+			message = "Node already exists!"
+		}
+
 		fmt.Printf("%v\n", "Current neighbours")
 		fmt.Printf("%v\n", blockchain.Neighbours)
 		response := struct {
 			Message           string
 			AllFollowingNodes []string
 		}{
-			"Node successfuly added!",
+			message,
 			blockchain.Neighbours,
 		}
 
@@ -186,7 +194,7 @@ func main() {
 	mux.HandleFunc("/chain", getChain)
 	mux.HandleFunc("/nodes", getNodes)
 	mux.HandleFunc("/node/new", registerNode)
-	log.Printf("Listening on port 5001")
+	log.Printf("Listening on 5001")
 	handler := cors.Default().Handler(mux)
 	log.Fatal(http.ListenAndServe(":5001", handler))
 }

@@ -72,12 +72,14 @@ func (bc *Blockchain) ResolveConflictsBetweenNodes() bool {
 	for _, ip := range bc.Neighbours {
 		resp, err := http.Get("http://" + ip + "/chain")
 		if err != nil {
-			panic(err)
+			fmt.Printf("%v\n", "Problem with connection with ip: "+ip)
+			continue
 		}
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			panic(err)
+			fmt.Printf("%v\n", "Problem with connection with ip: "+ip)
+			continue
 		}
 		var responseObj struct {
 			Chain  []Block
@@ -147,6 +149,20 @@ func (bc *Blockchain) AddRewardTransaction(senderPublicKey string, recipientPubl
 	} else if transaction.VerifyTransaction() {
 		bc.AddTransaction(transaction)
 	}
+}
+
+func (bc *Blockchain) AddNeigbourIfNotExist(node string) bool {
+	addNeighbour := true
+	for _, v := range bc.Neighbours {
+		if v == node {
+			addNeighbour = false
+		}
+	}
+	if addNeighbour {
+		bc.Neighbours = append(bc.Neighbours, node)
+		return true
+	}
+	return false
 }
 
 func (bc *Blockchain) Hash(block Block) string {

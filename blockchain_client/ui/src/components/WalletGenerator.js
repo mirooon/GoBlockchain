@@ -15,12 +15,9 @@ export class WalletGenerator extends React.Component {
   generate() {
     axios.get('http://localhost:8080/wallet/generate')
       .then((response) => {
-        console.log(response);
         this.setState({
           privateKey: response.data.privateKey,
           publicKey: response.data.publicKey
-        }, function () {
-          console.log(this.state.privateKey);
         });
       }
       )

@@ -1,0 +1,40 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+networks:
+  byfn:
+
+services:
+  bc-node1-ui-3001:
+    image: bc-node-react-ui
+    environment:
+      - REACT_APP_NODEIP=127.0.0.1:5001
+    ports:
+      - "3001:3000"
+    container_name: bc-node1-ui-3001
+    networks:
+      - byfn
+
+  bc-node2-ui-3002:
+    image: bc-node-react-ui
+    environment:
+      - REACT_APP_NODEIP=127.0.0.1:5002
+    ports:
+      - "3002:3000"
+    container_name: bc-node2-ui-3002
+    networks:
+      - byfn
+    
+  bc-node3-ui-3003:
+    image: bc-node-react-ui
+    environment:
+      - REACT_APP_NODEIP=127.0.0.1:5003
+    ports:
+      - "3003:3000"
+    container_name: bc-node3-ui-3003
+    networks:
+      - byfn

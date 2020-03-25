@@ -23,7 +23,7 @@ export class Transactions extends React.Component {
 
   getChain() {
     this.setState({ errorMessage: null});
-    if(this.state.node != ""){
+    if(this.state.node !== ""){
     axios.get('http://' + this.state.node +'/chain')
       .then((response) => {
         const blocksUpdate = response.data.Chain;
@@ -40,8 +40,7 @@ export class Transactions extends React.Component {
           this.setState({ 
               blocks: blocksUpdate,
               minedTransactions: minedTransactionsUpdate.flat(1),
-            }, () => { console.log(this.state.minedTransactions)
-          });
+            });
         }
       }
       ).catch((err) => {    this.setState({ errorMessage: "Error with connection :/"});    })

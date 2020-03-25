@@ -23,10 +23,6 @@ func NewTransaction(senderPublicKey string, recipientPublicKey string, signature
 	return t
 }
 
-func (t *Transaction) ShowTransactionInfo() {
-	fmt.Printf("%+v\n", t)
-}
-
 func ToBytes(o interface{}) []byte {
 	return []byte(fmt.Sprintf("%v", o))
 }
@@ -44,7 +40,9 @@ func (t *Transaction) VerifyTransaction() bool {
 		Amount             float32
 	}{t.SenderPublicKey, t.RecipientPublicKey, t.Amount}
 	hashTx := SHA256(signedTransaction)
+
 	rInt, sInt := signatureHexToIntPair(t.Signature)
+
 	publicKeyBytes, err := hex.DecodeString(t.SenderPublicKey)
 	if err != nil {
 		fmt.Printf("%v\n", err)

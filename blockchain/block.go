@@ -35,7 +35,3 @@ func NewBlock(blockNumber int, timestamp time.Time, transactions []Transaction, 
 	fmt.Println("New block created!")
 	return *b
 }
-
-func (b *Block) ShowBlockInfo() {
-	fmt.Printf("%+v\n", b)
-}

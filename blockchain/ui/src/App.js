@@ -5,13 +5,14 @@ import "tabler-react/dist/Tabler.css";
 import {TabbedCard, Tab, Card} from 'tabler-react'
 import { Transactions } from './components/Transactions';
 import { Neighbours } from './components/Neighbours';
+import { config } from './config/config'
 
 function App() {
   return (
     <div className="App container-fluid">
       <Card>
   <Card.Header>
-    <Card.Title>Go Blockchain Node</Card.Title> <p>IP: {process.env.NODE_IP}</p>
+    <Card.Title>Go Blockchain Node</Card.Title><Card.Header>IP: {config.REACT_APP_NODEIP}</Card.Header>
   </Card.Header>
 </Card>
       <TabbedCard initialTab="Transactions">

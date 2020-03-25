@@ -3,13 +3,14 @@ import axios from 'axios'
 import { Grid, Header, Button } from 'tabler-react'
 import { TransactionsTable } from './TransactionsTable';
 import { MinedTransactionsTable } from './MinedTransactionsTable';
+import { config } from '../config/config'
 
 export class Transactions extends React.Component {
   constructor(props) {
     super(props);
     this.getTransactions = this.getTransactions.bind(this);
     this.mineBlock = this.mineBlock.bind(this);
-    this.getChain = this.getChain.bind(this);
+    this.resolveConflictsAndGetChain = this.resolveConflictsAndGetChain.bind(this);
   }
 
   state = {
@@ -20,37 +21,28 @@ export class Transactions extends React.Component {
   
   componentDidMount(){
     this.getTransactions();
-    this.getChain();
+    this.resolveConflictsAndGetChain();
   }
 
   getTransactions() {
-    axios.get('http://localhost:5001/transactions')
+    axios.get('http://' + config.REACT_APP_NODEIP + '/transactions')
       .then((response) => {
-        console.log(response.data);
-        this.setState({ transactions: response.data}, () => {console.log("transactions downloaded")});
-        // this.setState({
-        //   privateKey: response.data.privateKey,
-        //   publicKey: response.data.publicKey
-        // }, function () {
-        //   console.log(this.state.privateKey);
-        // });
+        this.setState({ transactions: response.data});
       }
       )
   }
 
   mineBlock() {
-    console.log("mine");
-    axios.post('http://localhost:5001/mine')
-      .then((response) => {
+    axios.post('http://' + config.REACT_APP_NODEIP + '/mine')
+      .then(() => {
         this.getTransactions();
-        this.getChain();
+        this.resolveConflictsAndGetChain();
       }
       )
   }
 
-  getChain() {
-    console.log("getChain");
-    axios.get('http://localhost:5001/chain')
+  resolveConflictsAndGetChain() {
+    axios.get('http://' + config.REACT_APP_NODEIP + '/nodes/resolve')
       .then((response) => {
         const blocksUpdate = response.data.Chain;
         if(blocksUpdate != null){
@@ -101,7 +93,7 @@ export class Transactions extends React.Component {
                   </Grid.Row>
                   <br></br>
                   <Header.H1>Mined transactions</Header.H1>
-        <p><Button color="primary" onClick={this.getChain}>
+        <p><Button color="primary" onClick={this.resolveConflictsAndGetChain}>
     Refresh
   </Button></p>
         

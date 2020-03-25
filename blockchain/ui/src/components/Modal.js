@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios'
+import config from '../config/config'
 import {Modal, Button } from 'react-bootstrap';
 import { Form } from 'tabler-react'
 
@@ -9,7 +10,6 @@ export class CustomModal extends React.Component {
     this.handleClose = this.handleClose.bind(this);
     this.newTransaction = this.newTransaction.bind(this);
     this.handleShow = this.handleShow.bind(this);
-    console.log("1")
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -34,7 +34,7 @@ export class CustomModal extends React.Component {
     "recipientPublicKey":null,
     "amount":null,
     "signature":null,
-    "blockchainNode":"http://127.0.0.1:5001",
+    "blockchainNode":"http://" + config.Config.REACT_APP_NODEIP,
     "verifyResult":null
   }
   handleClose() {
@@ -47,7 +47,6 @@ export class CustomModal extends React.Component {
   }
 
   newTransaction() {
-    console.log("body");
     axios.defaults.headers['Access-Control-Allow-Methods'] = 'GET, POST';
     axios.defaults.headers['Access-Control-Allow-Origin'] = '*';
     body = {
@@ -56,20 +55,10 @@ export class CustomModal extends React.Component {
       "signature":this.state.signature,
       "amount": parseFloat(this.state.amount),
     }
-    console.log(body);
     axios.post(this.state.blockchainNode + '/transaction/new',  body, 
       )
       .then((response) => {
-    console.log("2");
-        this.setState({ verifyResult: response.data.verifyResult}, () => {console.log(this.state); console.log(typeof(this.state.verifyResult))});
-        // this.setState({blockchainNode: response.data.data})
-        // this.setState({ show: true, signature: response.data.Signature}, () => {console.log(this.state)});
-        // this.setState({
-        //   privateKey: response.data.privateKey,
-        //   publicKey: response.data.publicKey
-        // }, function () {
-        //   console.log(this.state.privateKey);
-        // });
+        this.setState({ verifyResult: response.data.verifyResult});
       }
       ).catch((reason) => {console.log(reason)})
   }

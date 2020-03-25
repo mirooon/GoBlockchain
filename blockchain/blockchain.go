@@ -33,13 +33,11 @@ func (bc *Blockchain) AddBlock(nonce int, prevBlockHash string) Block {
 	newBlock := NewBlock(len(bc.Chain), time.Now(), bc.Transactions, nonce, prevBlockHash)
 	bc.Transactions = nil
 	bc.Chain = append(bc.Chain, newBlock)
-	// fmt.Println("Block added!")
 	return newBlock
 }
 
 func (bc *Blockchain) AddTransaction(transaction Transaction) {
 	bc.Transactions = append(bc.Transactions, transaction)
-	// fmt.Println("Transaction added!")
 }
 
 var MINING_DIFFICULTY int = 1
@@ -65,7 +63,7 @@ func (bc *Blockchain) ValidChain(chain []Block) bool {
 	}
 	return true
 }
-func (bc *Blockchain) ResolveConflictsBetweenNodes() bool {
+func (bc *Blockchain) ResolveConflictsBetweenNodes() {
 	var currentChain []Block
 	maxLength := len(bc.Chain)
 
@@ -73,36 +71,40 @@ func (bc *Blockchain) ResolveConflictsBetweenNodes() bool {
 		resp, err := http.Get("http://" + ip + "/chain")
 		if err != nil {
 			fmt.Printf("%v\n", "Problem with connection with ip: "+ip)
+			fmt.Printf("%v\n", "err")
+			fmt.Printf("%v\n", err)
 			continue
 		}
 		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Printf("%v\n", "Problem with connection with ip: "+ip)
-			continue
-		}
-		var responseObj struct {
-			Chain  []Block
-			Length int
-		}
-		err = json.Unmarshal(body, &responseObj)
-		if err != nil {
-			panic(err)
-		}
-		length := responseObj.Length
-		chain := responseObj.Chain
-		if length > maxLength && bc.ValidChain(chain) {
-			currentChain = chain
-			maxLength = length
+		if resp.StatusCode >= 200 && resp.StatusCode <= 299 {
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				fmt.Printf("%v\n", err)
+				fmt.Printf("%v\n", "Problem with reading response body from: "+ip)
+				continue
+			}
+			var responseObj struct {
+				Chain  []Block
+				Length int
+			}
+			err = json.Unmarshal(body, &responseObj)
+			if err != nil {
+				panic(err)
+			}
+			length := responseObj.Length
+			chain := responseObj.Chain
+			if length > maxLength && bc.ValidChain(chain) {
+				currentChain = chain
+				maxLength = length
+			} else {
+				continue
+			}
 		}
 	}
 
 	if currentChain != nil {
 		bc.Chain = currentChain
-		return true
 	}
-
-	return false
 }
 func (bc *Blockchain) ValidProof(transactions []Transaction, lastBlockHash string, nonce int) bool {
 	var guess strings.Builder

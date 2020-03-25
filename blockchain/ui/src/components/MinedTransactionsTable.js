@@ -2,19 +2,12 @@ import React from 'react';
 import { Table } from 'tabler-react'
 
 export class MinedTransactionsTable extends React.Component {
-//   constructor(props) {
-//     super(props);
-
-//     // this.getTransactions = this.getTransactions.bind(this);
-//   }
-
 static getDerivedStateFromProps(props, state) {
     if (props.transactions !== state.transactions) {
       return {
         transactions: props.transactions,
       };
     }
-    // Return null to indicate no change to state.
     return null;
   }
   state = {

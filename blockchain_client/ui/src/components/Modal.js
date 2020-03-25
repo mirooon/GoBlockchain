@@ -6,6 +6,7 @@ import { Form } from 'tabler-react'
 export class CustomModal extends React.Component {
   constructor(props) {
     super(props);
+    this.handleChange = this.handleChange.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.newTransaction = this.newTransaction.bind(this);
     this.handleShow = this.handleShow.bind(this);
@@ -33,9 +34,14 @@ export class CustomModal extends React.Component {
     "recipientPublicKey":null,
     "amount":null,
     "signature":null,
-    "blockchainNode":"http://127.0.0.1:5001",
+    "blockchainNode":null,
     "verifyResult":null
   }
+
+  handleChange (evt) {
+    this.setState({ [evt.target.name]: evt.target.value });
+  }
+  
   handleClose() {
     this.props.action(false)
     this.setState({verifyResult: null})
@@ -58,16 +64,7 @@ export class CustomModal extends React.Component {
     body, 
       )
       .then((response) => {
-        console.log(response.data.verifyResult);
-        this.setState({ verifyResult: response.data.verifyResult}, () => {console.log(this.state); console.log(typeof(this.state.verifyResult))});
-        // this.setState({blockchainNode: response.data.data})
-        // this.setState({ show: true, signature: response.data.Signature}, () => {console.log(this.state)});
-        // this.setState({
-        //   privateKey: response.data.privateKey,
-        //   publicKey: response.data.publicKey
-        // }, function () {
-        //   console.log(this.state.privateKey);
-        // });
+        this.setState({ verifyResult: response.data.verifyResult});
       }
       )
   }
@@ -101,7 +98,7 @@ export class CustomModal extends React.Component {
             <p>
                 Blockchain Node:
                 </p>
-            <Form.Input name='blockchainNode' value={this.state.blockchainNode}/>
+            <Form.Input name='blockchainNode' placeholder="http://127.0.0.1:5001" onChange={this.handleChange}/>
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="secondary" onClick={this.handleClose}>

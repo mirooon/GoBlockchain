@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios'
 import { Grid, Header, Button, Alert, Form } from 'tabler-react'
+import { config } from '../config/config'
 
 export class Neighbours extends React.Component {
   constructor(props) {
@@ -25,10 +26,9 @@ export class Neighbours extends React.Component {
   }
 
   getNeighbours() {
-    axios.get('http://localhost:5001/nodes')
+    axios.get('http://' + config.REACT_APP_NODEIP + '/nodes')
       .then((response) => {
-          this.setState({ neighbours: response.data.Nodes}, () => {console.log("neigbours downloaded")});
-          console.log(response.data.Nodes);
+          this.setState({ neighbours: response.data.Nodes});
       }
       ).catch((err) => {
         this.setState({ errorMessage: "Problem with download the neighbours!", message: null});
@@ -41,11 +41,9 @@ export class Neighbours extends React.Component {
   }
 
   registerNeighbour() {
-    axios.post('http://localhost:5001/node/new', {Node: this.state.node})
+    axios.post('http://' + config.REACT_APP_NODEIP + '/node/new', {Node: this.state.node})
       .then((response) => {
-          console.log('response')
-          console.log(response)
-        this.setState({ neighbours: response.data.AllFollowingNodes, message: response.data.Message}, () => {console.log("neigbours downloaded")});
+        this.setState({ neighbours: response.data.AllFollowingNodes, message: response.data.Message});
       }
       ).catch((err) => {
         this.setState({ errorMessage: "Problem with neighbour registration!", message: null});

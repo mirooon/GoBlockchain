@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -46,7 +47,6 @@ func getTransactions(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		blockchain.ResolveConflictsBetweenNodes()
 		jsonTransactions, err := json.Marshal(blockchain.Transactions)
 		if err != nil {
 			// bad JSON or unrecognized json field
@@ -108,6 +108,16 @@ func getChain(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(jsResponse))
+	} else {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	}
+}
+
+func resolveConflicts(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" || r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		blockchain.ResolveConflictsBetweenNodes()
+		getChain(w, r)
 	} else {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
@@ -186,6 +196,9 @@ var blockchain Blockchain
 
 func main() {
 
+	port := flag.String("port", "5001", "port to listening")
+
+	flag.Parse()
 	blockchain = NewBlockchain()
 	mux := http.NewServeMux()
 	mux.HandleFunc("/transaction/new", newTransaction)
@@ -193,8 +206,10 @@ func main() {
 	mux.HandleFunc("/mine", mine)
 	mux.HandleFunc("/chain", getChain)
 	mux.HandleFunc("/nodes", getNodes)
+	mux.HandleFunc("/nodes/resolve", resolveConflicts)
 	mux.HandleFunc("/node/new", registerNode)
-	log.Printf("Listening on 5001")
+	log.Printf("Listening on " + *port)
 	handler := cors.Default().Handler(mux)
-	log.Fatal(http.ListenAndServe(":5001", handler))
+
+	log.Fatal(http.ListenAndServe(":"+*port, handler))
 }

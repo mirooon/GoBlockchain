@@ -35,10 +35,6 @@ func SHA256(o interface{}) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-func (t *Transaction) ShowTransactionInfo() {
-	fmt.Printf("%+v\n", t)
-}
-
 func (t *Transaction) SignTransaction() string {
 	privateKey, err := hex.DecodeString(t.SenderPrivateKey)
 	if err != nil {

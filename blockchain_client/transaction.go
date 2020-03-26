@@ -1,7 +1,6 @@
 package main
 
 import (
-	// "crypto"
 	"crypto/ecdsa"
 	"crypto/rand"
 	"crypto/sha256"

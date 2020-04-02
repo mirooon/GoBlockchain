@@ -34,7 +34,7 @@ export class CustomModal extends React.Component {
     "recipientPublicKey":null,
     "amount":null,
     "signature":null,
-    "blockchainNode":"http://" + config.Config.REACT_APP_NODEIP,
+    "blockchainNode":"http://" + config.Config.REACT_APP_HOSTNODEIP,
     "verifyResult":null
   }
   handleClose() {

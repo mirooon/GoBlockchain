@@ -66,7 +66,6 @@ func (bc *Blockchain) ValidChain(chain []Block) bool {
 func (bc *Blockchain) ResolveConflictsBetweenNodes() {
 	var currentChain []Block
 	maxLength := len(bc.Chain)
-
 	for _, ip := range bc.Neighbours {
 		resp, err := http.Get("http://" + ip + "/chain")
 		if err != nil {
@@ -93,16 +92,17 @@ func (bc *Blockchain) ResolveConflictsBetweenNodes() {
 			}
 			length := responseObj.Length
 			chain := responseObj.Chain
+			
 			if length > maxLength && bc.ValidChain(chain) {
 				currentChain = chain
 				maxLength = length
-			} else {
-				continue
+				} else {
+					continue
+				}
 			}
 		}
-	}
-
-	if currentChain != nil {
+		
+		if currentChain != nil {
 		bc.Chain = currentChain
 	}
 }

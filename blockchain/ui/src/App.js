@@ -12,7 +12,7 @@ function App() {
     <div className="App container-fluid">
       <Card>
   <Card.Header>
-    <Card.Title>Go Blockchain Node</Card.Title><Card.Header>IP: {config.REACT_APP_NODEIP}</Card.Header>
+    <Card.Title>Go Blockchain Node</Card.Title><Card.Header>HOST IP: {config.REACT_APP_HOSTNODEIP} - HOST IP: {config.REACT_APP_NETWORKNODEIP}</Card.Header>
   </Card.Header>
 </Card>
       <TabbedCard initialTab="Transactions">

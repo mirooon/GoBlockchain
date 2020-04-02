@@ -10,28 +10,30 @@ import (
 	"github.com/rs/cors"
 )
 
-func newTransaction(w http.ResponseWriter, r *http.Request) {
+func submitTransaction(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" || r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
 
 		d := json.NewDecoder(r.Body)
-		d.DisallowUnknownFields() // catch unwanted fields
+		// d.DisallowUnknownFields() // catch unwanted fields
 
 		transaction := Transaction{}
 
 		err := d.Decode(&transaction)
 		fmt.Printf("%v\n", err)
 		if err != nil {
+			fmt.Printf("%v\n", "err")
+			fmt.Printf("%v\n", err)
 			// bad JSON or unrecognized json field
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-
 		if d.More() {
 			http.Error(w, "extraneous data after JSON object", http.StatusBadRequest)
 			return
 		}
+		
 		res := transaction.VerifyTransaction()
 		data := fmt.Sprintf(`{"verifyResult": "%t"}`, res)
 		if res {
@@ -201,7 +203,7 @@ func main() {
 	flag.Parse()
 	blockchain = NewBlockchain()
 	mux := http.NewServeMux()
-	mux.HandleFunc("/transaction/new", newTransaction)
+	mux.HandleFunc("/transaction/submit", submitTransaction)
 	mux.HandleFunc("/transactions", getTransactions)
 	mux.HandleFunc("/mine", mine)
 	mux.HandleFunc("/chain", getChain)

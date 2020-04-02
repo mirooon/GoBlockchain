@@ -8,10 +8,10 @@ import (
 )
 
 type Transaction struct {
-	SenderPublicKey    string  `json:"SenderPublicKey"`
-	RecipientPublicKey string  `json:"RecipientPublicKey"`
-	Signature          string  `json:"Signature"`
-	Amount             float32 `json:"Amount"`
+	SenderPublicKey    string  `json:"senderPublicKey"`
+	RecipientPublicKey string  `json:"recipientPublicKey"`
+	Signature          string  `json:"signature"`
+	Amount             float32 `json:"amount"`
 }
 
 func NewTransaction(senderPublicKey string, recipientPublicKey string, signature string, amount float32) *Transaction {

@@ -3,7 +3,6 @@ A basic Blockchain implementation written in Golang. Project presents low level 
 
 Moreover besides the network, clients are able to create own wallet (private and public keys generation) instruct a new transactions and view currently verified transactions based on node chosen by ip address.
 
-{{badges}}
 ## Embraced topics
 - Nodes
     - Neighbours
@@ -38,7 +37,8 @@ will run 3 nodes, 1 client and UIs for each participant as below
 
 ![Example architecture](img-readme/ExampleArchitecture.png)
 
-
+## Work flow
+{{screenshots}}
 
 ## Future work
 - gossip transactions

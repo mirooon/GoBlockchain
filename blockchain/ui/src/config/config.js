@@ -1,1 +1,4 @@
-export const config = { REACT_APP_NODEIP: process.env.REACT_APP_NODEIP };
+export const config = { 
+    REACT_APP_HOSTNODEIP: process.env.REACT_APP_HOSTNODEIP,
+    REACT_APP_NETWORKNODEIP: process.env.REACT_APP_NETWORKNODEIP,
+ };

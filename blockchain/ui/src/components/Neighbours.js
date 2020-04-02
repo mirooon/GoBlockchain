@@ -26,7 +26,7 @@ export class Neighbours extends React.Component {
   }
 
   getNeighbours() {
-    axios.get('http://' + config.REACT_APP_NODEIP + '/nodes')
+    axios.get('http://' + config.REACT_APP_HOSTNODEIP + '/nodes')
       .then((response) => {
           this.setState({ neighbours: response.data.Nodes});
       }
@@ -41,7 +41,7 @@ export class Neighbours extends React.Component {
   }
 
   registerNeighbour() {
-    axios.post('http://' + config.REACT_APP_NODEIP + '/node/new', {Node: this.state.node})
+    axios.post('http://' + config.REACT_APP_HOSTNODEIP + '/node/new', {Node: this.state.node})
       .then((response) => {
         this.setState({ neighbours: response.data.AllFollowingNodes, message: response.data.Message});
       }
@@ -68,7 +68,7 @@ export class Neighbours extends React.Component {
 <div className="container-fluid">
         <Header.H1>Neighbours</Header.H1>
         {!this.ValidateIPaddress(this.state.node) &&         <p><Alert type="primary">
-  <strong>Provide a node (neighbour) address with port!</strong> (example: 127.0.0.1:5001)
+  <strong>Provide a node network (neighbour) address with port!</strong> (example: 172.16.1.11:5001)
 </Alert></p>}
         <Grid.Row cards deck>
           <Grid.Col md={4}>

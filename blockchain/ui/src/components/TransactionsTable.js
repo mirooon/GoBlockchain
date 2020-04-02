@@ -35,9 +35,9 @@ static getDerivedStateFromProps(props, state) {
               
                           return (<><Table.Row>
                               <Table.Col>{index+1}</Table.Col>
-                          <Table.Col>{transaction.SenderPublicKey.substring(0, 10)}...{transaction.SenderPublicKey.substring(transaction.SenderPublicKey.length-11, transaction.SenderPublicKey.length-1)}</Table.Col>
-                          <Table.Col>{transaction.RecipientPublicKey.substring(0, 10)}...{transaction.RecipientPublicKey.substring(transaction.RecipientPublicKey.length-11, transaction.RecipientPublicKey.length-1)}</Table.Col>
-                          <Table.Col>{transaction.Amount}</Table.Col>
+                          <Table.Col>{transaction.senderPublicKey.substring(0, 10)}...{transaction.senderPublicKey.substring(transaction.senderPublicKey.length-11, transaction.senderPublicKey.length-1)}</Table.Col>
+                          <Table.Col>{transaction.recipientPublicKey.substring(0, 10)}...{transaction.recipientPublicKey.substring(transaction.recipientPublicKey.length-11, transaction.recipientPublicKey.length-1)}</Table.Col>
+                          <Table.Col>{transaction.amount}</Table.Col>
                           </Table.Row></>
                         )}
                         )

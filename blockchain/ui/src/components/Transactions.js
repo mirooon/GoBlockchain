@@ -25,7 +25,7 @@ export class Transactions extends React.Component {
   }
 
   getTransactions() {
-    axios.get('http://' + config.REACT_APP_NODEIP + '/transactions')
+    axios.get('http://' + config.REACT_APP_HOSTNODEIP + '/transactions')
       .then((response) => {
         this.setState({ transactions: response.data});
       }
@@ -33,7 +33,7 @@ export class Transactions extends React.Component {
   }
 
   mineBlock() {
-    axios.post('http://' + config.REACT_APP_NODEIP + '/mine')
+    axios.post('http://' + config.REACT_APP_HOSTNODEIP + '/mine')
       .then(() => {
         this.getTransactions();
         this.resolveConflictsAndGetChain();
@@ -42,7 +42,7 @@ export class Transactions extends React.Component {
   }
 
   resolveConflictsAndGetChain() {
-    axios.get('http://' + config.REACT_APP_NODEIP + '/nodes/resolve')
+    axios.get('http://' + config.REACT_APP_HOSTNODEIP + '/nodes/resolve')
       .then((response) => {
         const blocksUpdate = response.data.Chain;
         if(blocksUpdate != null){

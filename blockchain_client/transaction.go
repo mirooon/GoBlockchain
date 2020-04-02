@@ -12,10 +12,10 @@ type Transaction struct {
 	SenderPublicKey    string `json:"senderPublicKey"`
 	SenderPrivateKey   string `json:"senderPrivateKey"`
 	RecipientPublicKey string `json:"recipientPublicKey"`
-	Amount             string `json:"amount"`
+	Amount             float32 `json:"amount"`
 }
 
-func NewTransaction(senderPublicKey string, senderPrivateKey string, recipientPublicKey string, amount string) *Transaction {
+func NewTransaction(senderPublicKey string, senderPrivateKey string, recipientPublicKey string, amount float32) *Transaction {
 	t := new(Transaction)
 	t.SenderPublicKey = senderPublicKey
 	t.SenderPrivateKey = senderPrivateKey
@@ -43,14 +43,15 @@ func (t *Transaction) SignTransaction() string {
 	if err != nil {
 		fmt.Printf("%v\n", err)
 	}
+	
 	transactionToSign := struct {
 		SenderPublicKey    string
 		RecipientPublicKey string
-		Amount             string
-	}{t.SenderPublicKey, t.RecipientPublicKey, t.Amount}
-	hashTx := SHA256(transactionToSign)
-	r, s, err := ecdsa.Sign(rand.Reader, privateKeyECDSA, ToBytes(hashTx))
-	if err != nil {
+		Amount             float32
+		}{t.SenderPublicKey, t.RecipientPublicKey, t.Amount}
+		hashTx := SHA256(transactionToSign)
+		r, s, err := ecdsa.Sign(rand.Reader, privateKeyECDSA, ToBytes(hashTx))
+		if err != nil {
 		fmt.Printf("%v\n", err)
 	}
 	signature := fromIntToHex(r) + fromIntToHex(s)

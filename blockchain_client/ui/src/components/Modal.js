@@ -59,8 +59,9 @@ export class CustomModal extends React.Component {
       "recipientPublicKey":this.state.recipientPublicKey,
       "signature":this.state.signature,
       "amount":parseFloat(this.state.amount),
+      "blockchainNode": this.state.blockchainNode
     };
-    axios.post(this.state.blockchainNode + '/transaction/new', 
+    axios.post('http://localhost:8080/transaction/submit', 
     body, 
       )
       .then((response) => {
@@ -98,7 +99,7 @@ export class CustomModal extends React.Component {
             <p>
                 Blockchain Node:
                 </p>
-            <Form.Input name='blockchainNode' placeholder="http://127.0.0.1:5001" onChange={this.handleChange}/>
+            <Form.Input name='blockchainNode' placeholder="ex. 172.16.1.12:5001" onChange={this.handleChange}/>
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="secondary" onClick={this.handleClose}>

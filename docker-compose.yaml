@@ -6,81 +6,90 @@
 version: '2'
 
 networks:
-  byfn:
+  gonet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.1.0/24
 
 services:
-  bc-node1-5001:
-    image: bc-node
+  bc-node1:
+    image: mirooon/bc-node
     ports:
       - "5001:5001"
-    container_name: bc-node1-5001
+    container_name: bc-node1
     networks:
-      - byfn
+      gonet:
+        ipv4_address: 172.16.1.11
 
   bc-node1-ui-3001:
-    image: bc-node-react-ui
+    image: mirooon/bc-node-react-ui
     environment:
-      - REACT_APP_NODEIP=127.0.0.1:5001
+      - REACT_APP_HOSTNODEIP=127.0.0.1:5001
+      - REACT_APP_NETWORKNODEIP=172.16.1.11:5001
     ports:
       - "3001:3000"
     container_name: bc-node1-ui-3001
     networks:
-      - byfn
-    # depends_on:
-    #   - bc-node1-5001
+      gonet:
+        ipv4_address: 172.16.1.21
 
-  bc-node2-5002:
-    image: bc-node
+  bc-node2:
+    image: mirooon/bc-node
     ports:
       - "5002:5001"
-    container_name: bc-node2-5002
+    container_name: bc-node2
     networks:
-      - byfn
+      gonet:
+        ipv4_address: 172.16.1.12
 
   bc-node2-ui-3002:
-    image: bc-node-react-ui
+    image: mirooon/bc-node-react-ui
     environment:
-      - REACT_APP_NODEIP=127.0.0.1:5002
+      - REACT_APP_HOSTNODEIP=127.0.0.1:5002
+      - REACT_APP_NETWORKNODEIP=172.16.1.12:5001
     ports:
       - "3002:3000"
     container_name: bc-node2-ui-3002
     networks:
-      - byfn
-    # depends_on:
-    #   - bc-node2-5002
+      gonet:
+        ipv4_address: 172.16.1.22
 
   bc-node3-5003:
-    image: bc-node
+    image: mirooon/bc-node
     ports:
       - "5003:5001"
     container_name: bc-node3-5003
     networks:
-      - byfn
+      gonet:
+        ipv4_address: 172.16.1.13
 
   bc-node3-ui-3003:
-    image: bc-node-react-ui
+    image: mirooon/bc-node-react-ui
     environment:
-      - REACT_APP_NODEIP=127.0.0.1:5003
+      - REACT_APP_HOSTNODEIP=127.0.0.1:5003
+      - REACT_APP_NETWORKNODEIP=172.16.1.13:5001
     ports:
       - "3003:3000"
     container_name: bc-node3-ui-3003
     networks:
-      - byfn
-    # depends_on:
-    #   - bc-node3-5003
+      gonet:
+        ipv4_address: 172.16.1.23
 
   bc-client:
-    image: bc-client
+    image: mirooon/bc-client
     ports:
       - "8080:8080"
     container_name: bc-client
     networks:
-      - byfn
+      gonet:
+        ipv4_address: 172.16.1.31
 
   bc-client-react-ui:
-    image: bc-client-react-ui
+    image: mirooon/bc-client-react-ui
     ports:
       - "4001:3000"
     container_name: bc-client-react-ui
     networks:
-      - byfn
+      gonet:
+        ipv4_address: 172.16.1.32

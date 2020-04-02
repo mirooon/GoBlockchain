@@ -36,7 +36,7 @@ export class CreateTransaction extends React.Component {
       "senderPublicKey":this.state.senderPublicKey,
       "senderPrivateKey":this.state.senderPrivateKey,
       "recipientPublicKey":this.state.recipientPublicKey,
-      "amount":this.state.amount,
+      "amount":parseFloat(this.state.amount),
     }
       )
       .then((response) => {

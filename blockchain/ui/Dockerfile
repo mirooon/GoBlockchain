@@ -1,14 +1,13 @@
-FROM node:10.16.0
+FROM node:10.16.0-alpine
 
-RUN mkdir usr/src/app
+RUN mkdir /app
 
-COPY . /usr/src/app
-WORKDIR /usr/src/app
+COPY . /app/
+WORKDIR /app
 
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
-ENV REACT_APP_NODEIP=$REACT_APP_NODEIP
+ENV PATH /app/node_modules/.bin:$PATH
 
-RUN npm install --silent
+RUN npm install --production
 # RUN npm install react-scripts@3.4.0 -g --silent
 
 EXPOSE 3000

@@ -12,7 +12,6 @@ Moreover besides the network, clients are able to create own wallet (private and
         - Adding block
         - Reward transaction for mined block
     - Consensus Protocol (resolving chains conflict between nodes/neighbours)
-    -
 - Client
     - Wallet generation (private and public keys based on ECDSA)
     - Creating transaction (signing transaction cryptographically)
@@ -37,8 +36,21 @@ will run 3 nodes, 1 client and UIs for each participant as below
 
 ![Example architecture](img-readme/ExampleArchitecture.png)
 
-## Work flow
-{{screenshots}}
+## Features
+- Client
+    - Wallet generator
+        ![Wallet Generator](img-readme/ExampleArchitecture.png)
+    - Create Transaction
+        ![Create Transaction](img-readme/createTransaction.png)
+    - Confirm Transaction (creating signature for transaction)
+        ![Confirm Transaction](img-readme/confirmTransaction.png)
+    - View transactions (downloading transaction from mined blocks)
+        ![View Transactions](img-readme/clientViewTransactions.png)
+- Node
+    - View unverified transactions pool and mined transaction
+        ![View transactions](img-readme/nodeTransactions.png)
+    - Neigbours management
+        ![Neighbours Management](img-readme/nodeNeighbours.png)
 
 ## Future work
 - gossip transactions

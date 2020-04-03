@@ -39,7 +39,7 @@ will run 3 nodes, 1 client and UIs for each participant as below
 ## Features
 - Client
     - Wallet generator
-        ![Wallet Generator](img-readme/ExampleArchitecture.png)
+        ![Wallet Generator](img-readme/walletGenerator.png)
     - Create Transaction
         ![Create Transaction](img-readme/createTransaction.png)
     - Confirm Transaction (creating signature for transaction)

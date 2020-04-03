@@ -24,7 +24,8 @@ export class Transactions extends React.Component {
   getChain() {
     this.setState({ errorMessage: null});
     if(this.state.node !== ""){
-    axios.get('http://' + this.state.node +'/chain')
+    
+    axios.get('http://localhost:8080/chain', {params: {nodeip: this.state.node}})
       .then((response) => {
         const blocksUpdate = response.data.Chain;
         if(blocksUpdate != null){
@@ -60,7 +61,7 @@ return (false)
       <div className="container-fluid">
         <Header.H1>Transactions</Header.H1>
         {!this.ValidateIPaddress(this.state.node) &&         <p><Alert type="danger">
-  <strong>Provide a node address with port!</strong> (example: 127.0.0.1:5001)
+  <strong>Provide a node address with port!</strong> (ex. 172.16.1.12:5001)
 </Alert></p>}
         <Grid.Row cards deck>
           <Grid.Col md={4}>

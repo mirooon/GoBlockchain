@@ -91,8 +91,6 @@ func submitTransaction(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("%+v\n", "submitTransactionRequest")
-	log.Printf("%+v\n", submitTransactionRequest)
 	transactionJSON, err := json.Marshal(submitTransactionRequest)
 	if err != nil {
 		fmt.Printf("Error: %s", err)
@@ -117,11 +115,41 @@ func submitTransaction(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(body))
 }
 
+func getChain(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	d := json.NewDecoder(r.Body)
+	d.DisallowUnknownFields() // catch unwanted fields
+
+	keys, ok := r.URL.Query()["nodeip"]
+    if !ok || len(keys[0]) < 1 {
+        log.Println("Url Param 'nodeip' is missing")
+        return
+	}
+	nodeip := keys[0]
+
+	resp, err := http.Get("http://" + nodeip + "/chain")
+	if err != nil {
+		fmt.Printf("%v\n", "Problem with connection with node: " + nodeip)
+		fmt.Printf("%v\n", "err")
+		fmt.Printf("%v\n", err)
+		panic(err)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+		return
+	}
+	w.Write([]byte(body))
+}
+
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/wallet/generate", generateWallet)
 	mux.HandleFunc("/transaction/create", createTransaction)
 	mux.HandleFunc("/transaction/submit", submitTransaction)
+	mux.HandleFunc("/chain", getChain)
 	log.Printf("Listening on port 8080")
 	handler := cors.Default().Handler(mux)
 	log.Fatal(http.ListenAndServe(":8080", handler))
